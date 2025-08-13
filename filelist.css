@@ -1,0 +1,153 @@
+/* Scoped modern file list theme for listedeslivre.php
+   NOTE: Only styles within .filelist container to avoid side effects */
+
+:root {
+  --fl-hue: 223;
+  --fl-sat: 10%;
+  --fl-white: hsl(0, 0%, 100%);
+  --fl-gray100: hsl(var(--fl-hue), var(--fl-sat), 90%);
+  --fl-gray200: hsl(var(--fl-hue), var(--fl-sat), 80%);
+  --fl-gray300: hsl(var(--fl-hue), var(--fl-sat), 70%);
+  --fl-gray400: hsl(var(--fl-hue), var(--fl-sat), 60%);
+  --fl-gray500: hsl(var(--fl-hue), var(--fl-sat), 50%);
+  --fl-gray600: hsl(var(--fl-hue), var(--fl-sat), 40%);
+  --fl-gray700: hsl(var(--fl-hue), var(--fl-sat), 30%);
+  --fl-gray800: hsl(var(--fl-hue), var(--fl-sat), 20%);
+  --fl-gray900: hsl(var(--fl-hue), var(--fl-sat), 10%);
+  --fl-primary400: hsl(var(--fl-hue), 90%, 60%);
+  --fl-primary500: hsl(var(--fl-hue), 90%, 50%);
+  --fl-trans-dur: 0.3s;
+}
+
+/* Card shell */
+.filelist.card {
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.05), 0 8px 30px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+
+.filelist .card-header {
+  background: linear-gradient(180deg, var(--fl-white), hsl(0 0% 98%));
+  border-bottom: 1px solid hsl(0 0% 92%);
+}
+
+.filelist .card-title {
+  margin: 0;
+}
+
+/* Table layout */
+.filelist-table {
+  border-collapse: separate !important;
+  border-spacing: 0 8px !important; /* row gaps */
+  background: transparent !important;
+}
+
+.filelist-table thead th {
+  border: 0 !important;
+  color: hsl(0 0% 35%);
+  font-weight: 600;
+  background: transparent !important;
+}
+
+.filelist-table tbody tr {
+  background: var(--fl-white);
+  box-shadow: 0 0 0 1px hsl(0 0% 92%) inset, 0 1px 4px rgba(0,0,0,.04);
+  transition: background-color var(--fl-trans-dur), box-shadow var(--fl-trans-dur), transform var(--fl-trans-dur);
+}
+
+.filelist-table tbody tr:hover {
+  background: hsl(0 0% 99%);
+  box-shadow: 0 0 0 1px hsl(0 0% 88%) inset, 0 6px 14px rgba(0,0,0,.06);
+}
+
+.filelist-table tbody td,
+.filelist-table thead th {
+  vertical-align: middle;
+}
+
+.filelist-table tbody td:first-child,
+.filelist-table thead th:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.filelist-table tbody td:last-child,
+.filelist-table thead th:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Inline details look (stacked meta on small screens) */
+@media (max-width: 600px) {
+  .filelist-table tbody td:nth-child(2),
+  .filelist-table tbody td:nth-child(3),
+  .filelist-table tbody td:nth-child(4) {
+    color: hsl(0 0% 45%);
+    font-size: .875rem;
+  }
+}
+
+/* Images (covers) in table */
+.filelist-table img {
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.1);
+}
+
+/* Action buttons keep Bootstrap look, just refine spacing */
+.filelist-table .btn {
+  transition: transform var(--fl-trans-dur), box-shadow var(--fl-trans-dur);
+}
+.filelist-table .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0,0,0,.08);
+}
+
+/* DataTables header and toolbar */
+.filelist #example1_wrapper .dt-buttons .btn {
+  border-radius: 20px;
+}
+.filelist #example1_wrapper .dataTables_filter input {
+  border-radius: 999px;
+  border: 1px solid hsl(0 0% 85%);
+  box-shadow: none;
+}
+
+/* Row focus effect when using keyboard navigation */
+.filelist-table tbody tr:focus-within {
+  outline: 2px solid var(--fl-primary500);
+  outline-offset: -2px;
+}
+
+/* Subtle separators like the demo line */
+.filelist .card-body {
+  background: linear-gradient(0deg, transparent 0 23px, hsl(0 0% 92%) 23px 24px, transparent 24px);
+}
+
+/* Dark mode (prefers-color-scheme) */
+@media (prefers-color-scheme: dark) {
+  .filelist.card {
+    box-shadow: 0 0 0 1px hsl(0 0% 20%), 0 8px 30px rgba(0,0,0,.35);
+  }
+  .filelist .card-header {
+    background: hsl(220 10% 18%);
+    border-color: hsl(0 0% 22%);
+  }
+  .filelist-table tbody tr {
+    background: hsl(220 10% 16%);
+    box-shadow: 0 0 0 1px hsl(0 0% 22%) inset, 0 1px 4px rgba(0,0,0,.6);
+  }
+  .filelist-table tbody tr:hover {
+    background: hsl(220 10% 20%);
+    box-shadow: 0 0 0 1px hsl(0 0% 30%) inset, 0 6px 14px rgba(0,0,0,.5);
+  }
+  .filelist-table thead th {
+    color: hsl(0 0% 80%);
+  }
+  .filelist #example1_wrapper .dataTables_filter input {
+    background: hsl(220 10% 16%);
+    color: hsl(0 0% 90%);
+    border-color: hsl(0 0% 30%);
+  }
+}
+
+
