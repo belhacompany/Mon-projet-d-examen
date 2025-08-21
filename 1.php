@@ -1,3 +1,4 @@
+
 <?php
 /* ---------- CONFIG DB ---------- */
 $dbHost = 'localhost';
@@ -34,16 +35,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $full = trim($_POST['name']);
         $email = trim($_POST['email']);
         $pass = trim($_POST['password']);
-
-        $pass_confirm = trim($_POST['password_confirm']);
+        
+        $pass_confirm = isset($_POST['password_confirm']) ? trim($_POST['password_confirm']) : '';
         $special_char_regex = '/[\W_]/'; // \W est n'importe quel caractère non alphanumérique, _ est le soulignement
 
         if ($pass !== $pass_confirm) {
-            $msg = 'Clearance codes do not match.';
+            $msg = 'Les mots de passe ne correspondent pas.';
         } elseif (strlen($pass) < 8 || !preg_match('/[A-Z]/', $pass) || !preg_match('/[a-z]/', $pass) || !preg_match('/[0-9]/', $pass) || !preg_match($special_char_regex, $pass)) {
-            $msg = 'Code must be 8+ chars, with upper, lower, number, & special char.';
+            // MESSAGE TRADUIT ICI
+            $msg = 'Le mot de passe doit contenir au moins 8 caractères, incluant une majuscule, une minuscule, un chiffre et un caractère spécial.';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $msg = 'Invalid field contact format.';
+            $msg = 'Format de l\'email invalide.';
         } else {
             try {
                 $hashed_pass = password_hash($pass, PASSWORD_DEFAULT);
@@ -56,7 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             } catch (PDOException $e) {
                 error_log("Registration error: " . $e->getMessage());
-                $msg = 'Error initializing profile. Please try again.';
+                if ($e->errorInfo[1] == 1062) {
+                    $msg = 'Cet email est déjà utilisé. Veuillez en choisir un autre.';
+                } else {
+                    $msg = 'Erreur lors de l\'inscription. Veuillez réessayer.';
+                }
             }
         }
     }
@@ -67,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pass = trim($_POST['password']);
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $msg = 'Invalid field contact format.';
+            $msg = 'Format de l\'email invalide.';
         } else {
             try {
                 $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
@@ -80,22 +86,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: Couverture final.php');
                     exit;
                 } else {
-                    $msg = 'Invalid credentials.';
+                    $msg = 'Identifiants invalides.';
                 }
             } catch (PDOException $e) {
                 error_log("Login error: " . $e->getMessage());
-                $msg = 'Error during authentication. Please try again.';
+                $msg = 'Erreur lors de l\'authentification. Veuillez réessayer.';
             }
         }
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cryptid Collective | Field Researcher Authentication</title>
+  <title>Cryptid Collective | Authentification de l'enquêteur</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Space+Mono&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -1485,9 +1491,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <span><span class="time-label">BY BELHADESIGN </span><span id="timestamp"><?php echo date('Y-m-d H:i:s'); ?> UTC</span></span>
     </div>
     <main class="glass-panel">
-      <div class="classified-stamp">Mon Authenetification</div>
+      <div class="classified-stamp">Mon Authentification</div>
       <?php if (!empty($msg)): ?>
-        <div class="auth-notification <?php echo strpos($msg, 'Error') === false && strpos($msg, 'Invalid') === false && strpos($msg, 'must') === false ? 'success' : 'error'; ?>">
+        <div class="auth-notification <?php echo strpos($msg, 'Erreur') !== false || strpos($msg, 'invalide') !== false || strpos($msg, 'doit') !== false ? 'error' : 'success'; ?>">
           <?php echo htmlspecialchars($msg); ?>
         </div>
       <?php endif; ?>
@@ -1499,11 +1505,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="flip-card__inner">
             <!-- LOGIN -->
             <div class="flip-card__front" id="sign-in-container">
-              <div class="title" data-text="Field Researcher Authentication">Authenetification</div>
-              <div class="classified-stripe">Veuillez vous connecte </div>
+              <div class="title" data-text="Field Researcher Authentication">Authentification</div>
+              <div class="classified-stripe">Veuillez vous connecter</div>
               <form class="flip-card__form" id="sign-in-form" method="POST">
                 <div class="form-group">
-                  <label for="login_email">Email:</label>
+                  <label for="login_email">Email :</label>
                   <div class="input-container">
                     <span class="input-prefix">#</span>
                     <input class="flip-card__input" id="login_email" name="email" placeholder="format: CC-XXXXX" type="email" required>
@@ -1511,7 +1517,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="login_password"> Mot de passe : </label>
+                  <label for="login_password">Mot de passe :</label>
                   <div class="input-container">
                     <span class="input-prefix secure">
                     <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" transform="" id="injected-svg">
@@ -1523,7 +1529,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   </div>
                 </div>
                 <div class="biometric-scanner mobile-only">
-                  <div class="auth-divider"><span>OR</span></div>
+                  <div class="auth-divider"><span>OU</span></div>
                   <div class="fingerprint-scanner">
                     <div class="scanner-pad">
                       <div class="scan-lines"></div>
@@ -1543,30 +1549,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   </div>
                 </button>
                 <div class="environment-status">
-                  <div class="status-item"><span class="status-label">TOUS :</span> <span class="status-value status-ok">ENLIGNE </span></div>
-                  <div class="status-item"><span class="status-label">COMPTE :</span> <span class="status-value status-ok">ACTIVE</span></div>
-                  <div class="status-item"><span class="status-label">PERMISSION :</span> <span class="status-value status-ok">SECURISE</span></div>
+                  <div class="status-item"><span class="status-label">STATUT :</span> <span class="status-value status-ok">EN LIGNE</span></div>
+                  <div class="status-item"><span class="status-label">COMPTE :</span> <span class="status-value status-ok">ACTIF</span></div>
+                  <div class="status-item"><span class="status-label">PERMISSION :</span> <span class="status-value status-ok">SÉCURISÉ</span></div>
                 </div>
                 <div class="mission-note">
-                  <span class="mission-label">ACTIVE ASSIGNMENT:</span> RECON · MADAGASCAR
+                  <span class="mission-label">MISSION ACTIVE :</span> RECON · MADAGASCAR
                 </div>
               </form>
             </div>
             <!-- SIGN-UP -->
             <div class="flip-card__back" id="register-container">
               <div class="title" data-text="Field Researcher Onboarding">S'INSCRIRE</div>
-              <div class="classified-stripe">NOUVELLE COMPTE</div>
+              <div class="classified-stripe">NOUVEAU COMPTE</div>
               <form class="flip-card__form" id="register-form" method="POST">
                 <div class="form-group">
-                  <label for="signup_name">NOM COMPLET </label>
+                  <label for="signup_name">NOM COMPLET</label>
                   <div class="input-container">
                     <span class="input-prefix">&gt;</span>
-                    <input class="flip-card__input" id="signup_name" name="name" placeholder="Nom , Prenom " type="text" required>
+                    <input class="flip-card__input" id="signup_name" name="name" placeholder="Nom, Prénom" type="text" required>
                     <div class="input-glow"></div>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="signup_email">Email </label>
+                  <label for="signup_email">Email</label>
                   <div class="input-container">
                     <span class="input-prefix">#</span>
                     <input class="flip-card__input" id="signup_email" name="email" placeholder="format: CC-XXXXX" type="email" required>
@@ -1574,10 +1580,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="signup_password">Mot de passe </label>
+                  <label for="signup_password">Mot de passe</label>
                   <div class="input-container">
                     <span class="input-prefix secure">#</span>
-                    <input class="flip-card__input" id="signup_password" name="password" placeholder="min 8 chars, caps & numbers" type="password" required>
+                    <input class="flip-card__input" id="signup_password" name="password" placeholder="min 8 cars, maj, nbr..." type="password" required>
+                    <div class="input-glow"></div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="signup_password_confirm">Confirmer le mot de passe</label>
+                  <div class="input-container">
+                    <span class="input-prefix secure">#</span>
+                    <input class="flip-card__input" id="signup_password_confirm" name="password_confirm" placeholder="Confirmez votre mot de passe" type="password" required>
                     <div class="input-glow"></div>
                   </div>
                 </div>
@@ -1599,7 +1613,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="aptitude-test-container">
       <div class="glass-panel aptitude-panel">
         <div class="test-header">
-          <h2>SECURITE ASSURER </h2>
+          <h2>SÉCURITÉ ASSURÉE</h2>
           <div class="test-progress">
             <div class="progress-bar">
               <div class="progress-fill"></div>
@@ -1608,9 +1622,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </div>
         <div class="test-section active" data-test="1">
-          <h3>100% Security Test </h3>
+          <h3>Test de Sécurité à 100%</h3>
           <div class="test-instruction">
-          Identification à chaque session 
+          Identification à chaque session
         </div>
           <div class="pattern-sequence">
             <div class="pattern-item">△</div>
@@ -1626,9 +1640,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </div>
         <div class="test-section" data-test="2">
-          <h3>Memory Test</h3>
+          <h3>Test de Mémoire</h3>
           <div class="test-instruction">
-            Memorize the marker locations. You have <span class="countdown">5</span> seconds.
+            Mémorisez l'emplacement des marqueurs. Vous avez <span class="countdown">5</span> secondes.
           </div>
           <div class="memory-map">
             <div class="memory-grid">
@@ -1660,9 +1674,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </div>
         <div class="test-section" data-test="3">
-          <h3>Reaction Test</h3>
+          <h3>Test de Réaction</h3>
           <div class="test-instruction">
-            Capture the targets as they appear.
+            Capturez les cibles dès leur apparition.
           </div>
           <div class="reaction-arena">
             <div class="capture-counter"><span>0</span></div>
@@ -1670,20 +1684,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="test-section" data-test="results">
           <div class="results-panel">
-            <h3>Assessment Complete</h3>
-            <p>Thank you for completing the aptitude assessment.</p>
+            <h3>Évaluation Terminée</h3>
+            <p>Merci d'avoir complété l'évaluation d'aptitude.</p>
           </div>
         </div>
         <div class="test-navigation">
           <button type="button" class="flip-card__btn test-continue">
-            <span class="btn-text">BEGIN ASSESSMENT</span>
+            <span class="btn-text">COMMENCER L'ÉVALUATION</span>
             <span class="btn-glow"></span>
           </button>
         </div>
       </div>
     </div>
     <footer>
-      <p class="disclaimer">SECURITE · CONFIDENTIALITE · ASSURANCE</p>
+      <p class="disclaimer">SÉCURITÉ · CONFIDENTIALITÉ · ASSURANCE</p>
     </footer>
     <div class="thermal-hints">
       <div class="thermal-hint" style="left: 15%; top: 20%;">ID FORMAT: CC-XXXXX</div>
@@ -1693,6 +1707,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
   <script>
+    // Le code JavaScript reste identique et n'a pas besoin de modification pour ce changement.
+    // Vous pouvez garder celui que vous aviez déjà.
     // DOM elements
     const signInContainer = document.getElementById('sign-in-container');
     const registerContainer = document.getElementById('register-container');

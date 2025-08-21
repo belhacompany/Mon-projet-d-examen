@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Carte CIN 3D</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      height: 150%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      perspective: 1000px;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+    .card-container {
+      width: 340px;
+      max-width: 95vw;
+      height: 215px;
+      max-height: 60vw;
+      min-width: 220px;
+      min-height: 120px;
+      position: relative;
+      perspective: 1000px;
+      margin: 20px auto;
+    }
+    .card {
+      width: 150%;
+      height: 150%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1s;
+      cursor: pointer;
+    }
+    .card.is-flipped {
+      transform: rotateY(180deg);
+    }
+    .card-side {
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      background-size: cover;
+      background-position: center;
+      overflow: hidden; /* cache le scroll */
+      scrollbar-width: none;
+    }
+    .card-side::-webkit-scrollbar {
+      display: none;
+    }
+    .card-front {
+      background-image: url('CIN.png');
+      padding: 100px;
+      overflow-y: auto;
+    }
+    .card-back {
+      background-image: url('CIN2.jpg');
+      transform: rotateY(180deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.2em;
+      font-weight: bold;
+      text-shadow: 1px 1px 4px #000;
+    }
+    .form {
+      background: rgba(255,255,255,0.85);
+      padding: 10px;
+      border-radius: 10px;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      overflow: hidden; /* cache le scroll du formulaire */
+    }
+    .title {
+      font-size: 1.2em;
+      font-weight: bold;
+      text-align: center;
+      margin: 0 0 5px 0;
+    }
+    .message {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 0.95em;
+    }
+    .flex {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      width: 100%;
+      font-size: 0.95em;
+    }
+    .input {
+      width: 100%;
+      padding: 6px;
+      margin-top: 3px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 0.95em;
+      box-sizing: border-box;
+    }
+    .submit {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      background: #314ce6;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .submit:hover {
+      background: #41b4ee;
+    }
+    .photo-preview {
+      display: block;
+      margin: 5px auto 0 auto;
+      max-width: 60px;
+      max-height: 60px;
+      border-radius: 5px;
+      object-fit: cover;
+      border: 1px solid #ccc;
+    }
+    @media (max-width: 600px) {
+      .card-container {
+        width: 98vw;
+        height: 60vw;
+        min-width: 150px;
+        min-height: 90px;
+      }
+      .form {
+        padding: 5px;
+      }
+      .title, .message {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="card-container">
+  <div class="card" id="cinCard">
+    <div class="card-side card-front">
+      <form action="ajouter.php" method="post" enctype="multipart/form-data" class="form">
+                            <img src="logo mada.jpg" alt="" style="align-self: center;width: 100%;">
+
+        <p class="title">KARA-PANONDROM-PIRENENA</p>
+        <p class="message">(Carte d'Identité Nationale)</p>
+        <div class="flex">
+          <label>
+            <span>ANARANA :</span>
+            <input required placeholder="Nom" type="text" class="input" name="nom">
+          </label>
+          <label>
+            <span>FANAMPINY ANARANA :</span>
+            <input required placeholder="Prénom" type="text" class="input" name="Fanampiny">
+          </label>
+        </div>
+        <label>
+          <span>TERAKA TAMIN'NY :</span>
+          <input required placeholder="Né(e) le" type="date" class="input" name="daty">
+        </label>
+        <label>
+          <span>TAO :</span>
+          <input required placeholder="à" type="text" class="input" name="Toerana">
+        </label>
+        <label>
+          <span>FAMANTARANA MANOKANA :</span>
+          <input required placeholder="Signe particulier" type="text" class="input" name="signe">
+        </label>
+        <label>
+          <span>Laharana :</span>
+          <input type="text" class="input" placeholder="N°" name="numero" required>
+        </label>
+        <label>
+          <span>FONENANA :</span>
+          <input required placeholder="Domaine" type="text" class="input" name="fonenana">
+        </label>
+        <label>
+          <span>BORIBORITANY :</span>
+          <input type="text" class="input" placeholder="Arrondissement" name="boriborintany">
+        </label>
+        <label>
+          <span>ASA ATAO :</span>
+          <input type="text" class="input" placeholder="Profession" name="asa">
+        </label>
+        <label>
+          <span>RAY NITERAKA :</span>
+          <input type="text" class="input" placeholder="Père" name="ray">
+        </label>
+        <label>
+          <span>RENY NITERAKA :</span>
+          <input type="text" class="input" placeholder="Mère" name="reny">
+        </label>
+        <label>
+          <span>NATAO TAO :</span>
+          <select name="natao" class="input" required>
+            <option value="" disabled selected>SAFIDY</option>
+            <option value="Antananarivo">Antananarivo</option>
+            <option value="Antsiranana">Antsiranana</option>
+            <option value="Mahajanga">Mahajanga</option>
+            <option value="Fianarantsoa">Fianarantsoa</option>
+            <option value="Toamasina">Toamasina</option>
+            <option value="Toliara">Toliara</option>
+            <option value="Antalaha">Antalaha</option>
+            <option value="Ambatondrazaka">Ambatondrazaka</option>
+            <option value="Ambanja">Ambanja</option>
+            <option value="Ambositra">Ambositra</option>
+            <option value="Androy">Androy</option>
+            <option value="Analamanga">Analamanga</option>
+            <option value="Anosy">Anosy</option>
+          </select>
+        </label>
+        <label>
+          <span>TAMIN'NY :</span>
+          <input type="date" class="input" placeholder="Le" name="le">
+        </label>
+        <label>
+          <span class="numero">N°</span>
+          <input type="text" class="input" placeholder="" name="numero1" required>
+        </label>
+        <label>
+          <span>PHOTO :</span>
+          <input type="file" class="input" name="photo" accept="image/*" onchange="previewPhoto(event)">
+          <img id="photoPreview" class="photo-preview" style="display:none;">
+        </label>
+        <button class="submit" name="ajouter">Enregistrer</button>
+      </form>
+    </div>
+    <div class="card-side card-back">
+      <div>
+        <span>Verso de la carte (utilisez-le pour un aperçu, des instructions, etc.)</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // Aperçu de la photo
+  function previewPhoto(event) {
+    const input = event.target;
+    const preview = document.getElementById('photoPreview');
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      }
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      preview.src = '';
+      preview.style.display = 'none';
+    }
+  }
+  // Retourner la carte au clic
+  const card = document.getElementById('cinCard');
+  card.addEventListener('click', () => {
+    card.classList.toggle('is-flipped');
+  });
+</script>
+</body>
+</html>
